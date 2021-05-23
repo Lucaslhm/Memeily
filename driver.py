@@ -24,7 +24,7 @@ client = None
 
 sys.path.append(".")
 
-
+# Run our client and env inititalization
 def init():
     global client
 
@@ -33,6 +33,8 @@ def init():
 
     print("--Finished initialization--")
 
+
+# Pulls a random line out of our hilda quote file
 def random_line(afile):
     line = next(afile)
     for num, aline in enumerate(afile, 2):
@@ -41,7 +43,7 @@ def random_line(afile):
         line = aline
     return line
 
-
+# Retrieves the remaining time until lyn's stream
 def lyndate():
     today = datetime.date.today()
     futdate = datetime.date(2071, 5, 21)
@@ -54,8 +56,10 @@ def lyndate():
 
     return ("%d days %s" % (days, hms))
 
-
+# Retrieves the current market price
 def getWrightSocks():
+
+    # Identification Headers to pass to amazon
     HEADERS = {
         'authority': 'www.amazon.com',
         'pragma': 'no-cache',
@@ -70,6 +74,7 @@ def getWrightSocks():
         'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
     }
 
+    # Retrieves the page specified in the config file
     page = requests.get(cfg.WRIGHT_SOCKS_PAGE, headers=HEADERS)
     # page = requests.get(cfg.WRIGHT_SOCKS_PAGE)
 
@@ -87,6 +92,7 @@ def getWrightSocks():
 
     # to prevent script from crashing when there isn't a price for the product
     try:
+        # Fetch price off page
         price = soup.find(id='priceblock_ourprice').get_text()
     except:
         price = "ERROR RETRIEVING PRICE! HELP ME @VapidAnt#3577"
@@ -105,13 +111,17 @@ def getWrightSocks():
         return "YOU CAN GET A PAIR OF WRIGHT SOCKS TODAY FOR ONLY " + "**" + price + "**"
 
 
+# Creates a random tea recipe
 def teaRecipe():
+    # Possible tea ingredients
     ingredientsList = ["chamomile tea", "white tea", "green tea", "linden flowers", "black tea",
                        "oolong tea", "rose petals", "pu’erh tea", "candied pineapple", "Pai Mu Tan tea",
                        "rooibos tea", "shredded coconut"]
 
+    # Selects a steep time between 3 and 30 minutes
     steepTime = "**" + str(random.randint(3, 30)) + " minutes!**"
 
+    # pulls a sample of up to 5 ingredients (minimum 2)
     recommendedIngredients = random.sample(ingredientsList, random.randint(2, 5))
 
 
@@ -120,6 +130,7 @@ def teaRecipe():
     itterationCount = len(recommendedIngredients)
     for ingredient in recommendedIngredients:
 
+        # guarentees we end up with 100% of the tea
         if itterationCount > 1:
             randPercent = random.randint(1, (int(percent * 0.9)))
 
@@ -129,6 +140,7 @@ def teaRecipe():
 
         recipe = recipe + " **" + str(randPercent) + "%** of **" + ingredient + "**"
 
+        # only appends "and" if we have remaining ingredients
         if itterationCount > 1:
             recipe = recipe + " and"
             itterationCount = itterationCount - 1
@@ -137,6 +149,7 @@ def teaRecipe():
 
 def hildaQuote():
 
+    # Fetches our hilda quotes
     with open("hildaadivse.csv", 'r') as file:
         #quote = random.choice(list(file.read()))
 
@@ -149,12 +162,16 @@ def hildaQuote():
 
     return "As Aunt Hilda always says... **" + quote + "**"
 
-
+# Main driver method
 def main():
+
+    # Start client and let us know it is up and running
     @client.event
     async def on_ready():
         print("Startup Complete")
 
+
+    # Message event listener
     @client.event
     async def on_message(message):
         if message.author == client.user:
@@ -167,26 +184,31 @@ def main():
         # Have a permanent log
         print(message.content)
 
+        # Listens for teamtime command
         if message.content.lower() == cfg.PREFIX + "teatime":
             response = teaRecipe()
             await message.channel.send(response)
             print("Sent teatime Response")
 
+        # Listens for hilda command
         elif message.content.lower() == cfg.PREFIX + "hilda":
             response = hildaQuote()
             await message.channel.send(response)
             print("Sent Hilda Response")
 
+        # Listens for wynlyn command
         elif message.content.lower() == cfg.PREFIX + "wynlyn":
             response = lynmsg
             await message.channel.send(response)
             print("Sent Lyn Response")
 
+        # Listens for wrightstonk command
         elif message.content.lower() == cfg.PREFIX + "wrightstonk":
             response = getWrightSocks()
             await message.channel.send(response)
             print("Sent Sock Response")
 
+    # Runs the client responder
     client.run(cfg.TOKENS['DISCORD_TOKEN'])
 
 
