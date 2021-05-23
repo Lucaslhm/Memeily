@@ -3,7 +3,7 @@
 #### *By VapidAntGames*
 
 
-#Commands:
+# Commands:
 
 ## !wynlyn
 Tells you how long until @Lynenna#6247's 24h stream on May 21st 2071
